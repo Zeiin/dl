@@ -20,9 +20,11 @@ class Durant(Adv):
         `dragon, s=1
         `s3, not self.s3_buff
         `s1
-        `s2, x=5
+        `s2
+        `s4, x=5
     """
     coab = ['Tiki', 'Tobias', 'Axe2']
+    share = ['Curran']
 
 if __name__ == '__main__':
     from core.simulate import test_with_argv
