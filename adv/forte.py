@@ -20,7 +20,7 @@ class Forte(Adv):
         `s1
         `fs, x=5
         """
-    coab = ['Ieyasu','Wand','Bow']
+    coab = ['Ieyasu','Wand','Cleo']
 
     def prerun(self):
         self.dgauge_charge = 4
