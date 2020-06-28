@@ -116,11 +116,11 @@ class DragonBase(Slot):
     a = [('a', 0.60)]
     default_dragonform = {
         'duration': 600 / 60, # 10s dragon time
-        'dracolith': 0.40, # base dragon damage
+        'dracolith': 0.70, # base dragon damage
         'exhilaration': 0, # psiren aura
         'skill_use': 1, # number of skill usage
         'gauge_iv': 15, # gauge interval
-        'gauge_val': 10, # gauge regen value
+        'gauge_val': 100, # gauge regen value
         'latency': 0, # amount of delay for cancel
         'act': 'end',
 

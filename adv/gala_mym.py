@@ -24,7 +24,7 @@ class Gala_Mym(Adv):
     coab = ['Blade', 'Marth', 'Yuya']
 
     def d_coabs(self):
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
+        if self.sim_afflict:
             self.coab = ['Blade', 'Verica', 'Yuya']
     
     conf['dragonform1'] = {
@@ -77,7 +77,7 @@ class Gala_Mym(Adv):
             self.dragonform.conf += self.conf.dragonform2
 
     def s1_proc(self, e):
-        self.dragonform.charge_gauge(5)
+        self.dragonform.charge_gauge(50)
 
     def s2_proc(self, e):
         if self.a1_buff.get():

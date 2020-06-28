@@ -12,10 +12,10 @@ class Rex(Adv):
     conf['slots.d'] = Leviathan()
     conf['acl'] = """
         `dragon
+        `s3, not self.s3_buff
         `s1 
-        `s2,seq=4
-        `s3,seq=4
-        `fs,seq=5
+        `s2, x=4
+        `fs, x=5
     """
     coab = ['Blade', 'Xander', 'Dagger']
 
@@ -26,7 +26,7 @@ class Rex(Adv):
             self.conf['slots.frostbite.a'] = Primal_Crisis()+His_Clever_Brother()
 
     def d_coabs(self):
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0 and (self.duration > 120 or self.duration <= 60):
+        if self.sim_afflict and (self.duration > 120 or self.duration <= 60):
             self.coab = ['Blade', 'Xander','Yurius']
 
 if __name__ == '__main__':

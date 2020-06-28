@@ -10,7 +10,7 @@ class Vanessa(Adv):
     
     conf = {}
     conf['slots.a'] = Summer_Paladyns()+Primal_Crisis()
-    conf['slots.burn.a'] = Resounding_Rendition()+Elegant_Escort()
+    conf['slots.burn.a'] = Resounding_Rendition()+Me_and_My_Bestie()
     conf['acl'] = """
         `dragon
         `s3, not self.s3_buff
@@ -23,7 +23,7 @@ class Vanessa(Adv):
     def d_coabs(self):
 #        if self.duration <= 120 and self.duration > 60:
 #            self.coab = ['Blade', 'Marth', 'Hmym']
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
+        if self.sim_afflict:
             self.coab = ['Blade','Marth','Serena']
 
 #    def d_slots(self):

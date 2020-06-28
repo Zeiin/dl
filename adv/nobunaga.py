@@ -1,18 +1,16 @@
 from core.advbase import *
 from slot.a import *
-#from slot.d import *
+from slot.d import *
 
 def module():
     return Nobunaga
 
 class Nobunaga(Adv):
-    comment = 'use s2 instead of fs to dispel when possible'
-
     a1 = ('a',0.2,'hit15')
 
     conf = {}
     conf['slots.a'] = The_Wyrmclan_Duo()+Primal_Crisis()
-    conf['slots.burn.a'] = Resounding_Rendition()+Elegant_Escort()
+    conf['slots.burn.a'] = Resounding_Rendition()+Me_and_My_Bestie()
     conf['acl'] = """
         `dragon, s=2
         `s3, not self.s3_buff
@@ -31,14 +29,14 @@ class Nobunaga(Adv):
         adv.rebind_function(Nobunaga, 'ba_proc')
 
     def s1_proc(self, e):
-        self.burning_ambition = self.dmg_formula(e.name, 11.18)
+        self.burning_ambition = self.dmg_formula('s', 11.18)
         t = Timer(self.ba_proc)
         t.name = e.name
         t.on(30)
 
     def ba_proc(self, t):
         if self.burning_ambition > 0:
-            self.dmg_make(f'{t.name}_boost', self.burning_ambition, fixed=True)
+            self.dmg_make('s1_burning_ambition', self.burning_ambition, fixed=True)
             self.burning_ambition = 0
             return True
         return False

@@ -210,6 +210,7 @@ class Mitsuba(Adv):
     conf['slots.a'] = Twinfold_Bonds()+His_Clever_Brother()
     # tc2afsf tc2a- s1
     conf['acl'] = """
+        `s3, not self.s3_buff
         if s1.check() and not self.afflics.frostbite.get()
         `sashimi
         else
@@ -250,9 +251,8 @@ class Mitsuba(Adv):
     def update_stance(self):
         if self.hits >= 20 and self.next_stance is not None:
             curr_stance = self.stance_dict[self.stance]
-            curr_stance.off()
             next_stance = self.stance_dict[self.next_stance]
-            next_stance.on()
+            next_stance.switch(curr_stance)
             self.stance = self.next_stance
             self.next_stance = None
 

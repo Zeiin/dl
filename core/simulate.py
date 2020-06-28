@@ -11,13 +11,15 @@ tension_efficiency = {
     'inspiration': 0.6
 }
 
-ele_afflict = {
+ELE_AFFLICT = {
     'flame': 'burn',
     'water': 'frostbite',
     'wind': 'poison',
     'light': 'paralysis',
     'shadow': 'poison'
 }
+
+DOT_AFFLICT = ['poison', 'paralysis', 'burn', 'frostbite']
 
 def run_once(classname, conf, duration, cond):
     adv = classname(conf=conf,cond=cond)
@@ -107,10 +109,12 @@ def test(classname, conf={}, duration=180, verbose=0, mass=None, output=None, te
             'team_tension': adv_2.logs.team_tension
         }
 
-    if verbose == -5:
-        aff_name = ele_afflict[adv.slots.c.ele]
-        conf['sim_afflict.efficiency'] = 1
-        conf['sim_afflict.type'] = aff_name
+    if -10 <= verbose <= -5:
+        aff_name = ELE_AFFLICT[adv.slots.c.ele]
+        conf[f'sim_afflict.{aff_name}'] = 1
+        if verbose < -5:
+            for aff_name in DOT_AFFLICT[:(-verbose-6)]:
+                conf[f'sim_afflict.{aff_name}'] = 1
         adv, real_d = run_once(classname, conf, duration, cond)
         if mass:
             adv.logs, real_d = run_mass(mass, adv.logs, real_d, classname, conf, duration, cond)
@@ -126,6 +130,10 @@ def test(classname, conf={}, duration=180, verbose=0, mass=None, output=None, te
                 output.write('-,{},{}\n'.format(page, c if isinstance(c, str) else '_'))
             report(d, a, output, team_dps, cond=c)
         else:
+            if c == 'affliction':
+                output.write('-'*BR+'\n')
+                output.write(' & '.join(adv.sim_afflict))
+                output.write('\n')
             summation(d, a, output, cond=c, no_cond_dps=no_cond_dps)
 
     return run_results
@@ -156,7 +164,7 @@ def brute_force_slots(classname, conf, output, team_dps, duration):
         The_Shining_Overlord,
         Summer_Paladyns,
         Sisters_Day_Out,
-        Elegant_Escort,
+        Me_and_My_Bestie,
         Beautiful_Nothingness,
         Dear_Diary,
         Mega_Friends,
@@ -337,7 +345,7 @@ def act_sum(actions, output):
             if xseq < p_xseq:
                 condensed = append_condensed(condensed, p_act)
             p_xseq = xseq
-        elif act == 'fs' and p_act[0] == 'x':
+        elif act.startswith('fs') and p_act[0] == 'x':
             p_xseq = 0
             condensed = append_condensed(condensed, p_act+act)
         else:
@@ -366,8 +374,8 @@ def act_sum(actions, output):
             freq -= 1
         elif idx > 0:
             output.write(' ')
-        if act[0] == 'x' or act == 'fs':
-            if act != 'fs':
+        if act[0] == 'x' or act.startswith('fs'):
+            if act[0] == 'x':
                 act = 'c' + act[1:]
             output.write(act)
             p_type = 'x'
@@ -452,8 +460,7 @@ def summation(real_d, adv, output, cond=True, mod_func=None, no_cond_dps=None):
             output.write('\n')
     output.write('-'*BR)
     damage_counts(real_d, adv.logs.damage, adv.logs.counts, output, mod_func=mod_func, res=res)
-    if cond:
-        output.write('\n')
+    output.write('\n')
 
 def report(real_d, adv, output, team_dps, cond=True, mod_func=None):
     name = adv.__class__.__name__
@@ -475,8 +482,11 @@ def report(real_d, adv, output, team_dps, cond=True, mod_func=None):
     dps_mappings = {}
     dps_mappings['attack'] = dict_sum(dmg['x'], mod_func) / real_d
     for k in sorted(dmg['f']):
-        if k == 'fs':
-            dps_mappings['force_strike'] = dmg['f']['fs'] / real_d
+        if k in ('fs', 'fs1', 'fs2', 'fs3', 'fs4'):
+            try:
+                dps_mappings['force_strike'] += dmg['f'][k] / real_d
+            except:
+                dps_mappings['force_strike'] = dmg['f'][k] / real_d
         else:
             dps_mappings[k] = dmg['f'][k] / real_d
     for k in sorted(dmg['s']):

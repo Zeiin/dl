@@ -58,15 +58,16 @@ class FS_Speedable(Action):
         return self.tap()
 
 class Hunter_Sarisse(Adv):
-    comment = 'fs hit count vary on distance and enemy size; needs combo time from chain coability to keep combo'
+    comment = '4hit FS on A&O sized enemy (see special for 20hit); needs combo time to keep combo'
     a1 = ('fs', 0.30)
     a3 = ('fs', 0.25)
 
     conf = {}
-    conf['slots.a'] = Stellar_Show()+Primal_Crisis()
+    conf['slots.a'] = The_Lurker_in_the_Woods()+Primal_Crisis()
     conf['slots.frostbite.a'] = conf['slots.a']
-    conf['slots.d'] = Dragonyule_Jeanne()
+    conf['slots.d'] = Nimis()
     conf['acl'] = """
+        `s3, not self.s3_buff
         `s1, fsc
         `s2, fsc
         `dodge, fsc
@@ -75,7 +76,7 @@ class Hunter_Sarisse(Adv):
     coab = ['Dagger', 'Xander', 'Grace']
 
     def init(self):
-        default_pierce = 2 if self.condition('lance+ distance from HBH sized enemy') else 1
+        default_pierce = 1
         conf_alt_fs = {
             'fs1': {
                 'dmg': 0.74,
@@ -119,6 +120,8 @@ class Hunter_Sarisse(Adv):
         self.l_fs4 = Listener('fs4',self.l_fs4)
         self.fs = None
 
+        self.fs_attdown = Debuff('fs', 0.15, 10, 1, 'attack')
+
     def do_fs(self, e, name):
         log('cast','fs')
         self.__dict__['a_'+name].getdoing().cancel_by.append(name)
@@ -137,6 +140,9 @@ class Hunter_Sarisse(Adv):
         self.fs_proc(e)
         self.think_pin('fs')
         self.charge(name,self.conf[name+'.sp'])
+
+    def fs_proc(self, e):
+        self.fs_attdown.on()
 
     def l_fs1(self, e):
         self.do_fs(e, 'fs1')

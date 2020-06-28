@@ -29,15 +29,16 @@ class Delphi(Adv):
         self.s2.autocharge_init(50000).on()
         self.s1fscharge = 0
 
+        self.s2_attdown = Debuff('s2', 0.15, 15, 1, 'attack')
+
     def s1_proc(self, e):
         if self.s1defdown:
-            buff = Debuff('s1defdown',0.20,10,1)
-            buff.bufftime = buff._no_bufftime
-            buff.on()
+            Debuff('s1defdown',0.20,10,1).no_bufftime().on()
         self.s1fscharge = 1
     
     def s2_proc(self, e):
         self.afflics.poison(e.name,120+self.flurry_poison*(self.hits>=15),3.00,27)
+        self.s2_attdown.on()
 
     def fs_proc(self, e):
         if self.s1fscharge > 0:

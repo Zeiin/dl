@@ -46,22 +46,6 @@ SPECIAL_ADV = {
         'fn': 'gala_luca.py.maxstacks.py',
         'nc': []
     },
-    'veronica_1hp': {
-        'fn': 'veronica.py.1hp.py',
-        'nc': []
-    },
-    'natalie_1hp': {
-        'fn': 'natalie.py.1hp.py',
-        'nc': []
-    },
-    'valentines_addis_1hp': {
-        'fn': 'valentines_addis.py.1hp.py',
-        'nc': []
-    },
-    'bellina_1hp': {
-        'fn': 'bellina.py.1hp.py',
-        'nc': []
-    },
     'fjorm_stack': {
         'fn': 'fjorm.py.x4.py',
         'nc': ['acl']
@@ -212,6 +196,10 @@ def simc_adv_test():
         missile = abs(float(params['missile']))
         if missile > 0:
             conf['missile_iv'] = {'fs': missile, 'x1': missile, 'x2': missile, 'x3': missile, 'x4': missile, 'x5': missile}
+    if 'hp' in params:
+        conf['hp'] = min(abs(int(params['hp'])), 100)
+    if 'dragonbattle' in params:
+        conf['dragonbattle'] = bool(params['dragonbattle'])
     if coab is not None:
         conf['coabs'] = coab
     if share is not None:
@@ -222,9 +210,7 @@ def simc_adv_test():
         except:
             pass
     try:
-        if params['sim_afflict_type'] in ['burn', 'paralysis', 'poison', 'frostbite']:
-            conf['sim_afflict.efficiency'] = abs(float(params['sim_afflict_time'])) / 100
-            conf['sim_afflict.type'] = params['sim_afflict_type']
+        conf[f'sim_afflict.{params["sim_afflict_type"]}'] = abs(float(params['sim_afflict_time'])) / 100
     except:
         pass
     try:

@@ -13,6 +13,7 @@ class Halloween_Odetta(Adv):
     conf['slots.d'] = Gaibhne_and_Creidhne()
     conf['acl'] = """
         `dragon.act('c3 s end'), s=2
+        `s3, not self.s3_buff
         `s2, cancel
         `s1, fsc
         `fs, x=3 and not self.afflics.frostbite.get()
@@ -21,7 +22,7 @@ class Halloween_Odetta(Adv):
     coab = ['Summer_Estelle','Blade','Dagger']
 
     def d_coabs(self):
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
+        if self.sim_afflict:
             self.coab = ['Summer_Estelle','Blade','Renee']
 
     def init(self):

@@ -5,26 +5,17 @@ def module():
     return Yuya
 
 class Yuya(Adv):
-    a3 = ('primed_crit_chance', 0.5,5)
+    a3 = ('primed_crit_chance', 0.05,5)
     
     conf = {}
-    conf['slots.a'] = Primal_Crisis()+The_Lurker_in_the_Woods()
-    conf['slots.burn.a'] = Twinfold_Bonds()+Elegant_Escort()
+    conf['slots.burn.a'] = Twinfold_Bonds()+Me_and_My_Bestie()
     conf['acl'] = """
-        `dragon
+        `dragon, s=1
         `s3, not self.s3_buff
-        if self.afflics.burn.get()
-            `s1
-            `fs, x=4
-        else
-            `fs, x=2
-        end
+        `s1
+        `fs, x=4
         """
-    coab = ['Blade', 'Marth', 'Grace']
-
-    def d_coabs(self):
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
-            self.coab = ['Blade','Marth','Tiki']
+    coab = ['Blade', 'Marth', 'Tiki']
 
     def prerun(self):
         if self.condition('hp60'):

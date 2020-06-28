@@ -9,7 +9,7 @@ class Euden(Adv):
     a1 = ('dc', 4)
     
     conf = {}
-    conf['slots.a'] = The_Shining_Overlord()+Elegant_Escort()
+    conf['slots.a'] = The_Shining_Overlord()+Me_and_My_Bestie()
     conf['slots.d'] = Gala_Mars()
     conf['acl'] = """
         `dragon
@@ -23,7 +23,7 @@ class Euden(Adv):
 
     def s1_proc(self, e):
         self.afflics.burn(e.name,110,0.883)
-        self.dragonform.charge_gauge(3)
+        self.dragonform.charge_gauge(30)
 
 if __name__ == '__main__':
     from core.simulate import test_with_argv

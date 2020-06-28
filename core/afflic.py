@@ -291,10 +291,13 @@ class Afflic_dot(AfflicUncapped):
     def on(self, name, rate, coef, duration=None, iv=None, dtype=None):
         self.rate = rate + self.edge
         self.coef = coef
-        self.dtype = dtype
+        if dtype is None and name[0] == 's':
+            self.dtype = 's'
+        else:
+            self.dtype = dtype
         self.duration = duration or self.default_duration
         self.iv = iv or self.default_iv
-        self.dot = Dot('o_%s_%s' % (name, self.name), coef, self.duration, self.iv, self.dtype)
+        self.dot = Dot(f'o_{name}_{self.name}', coef, self.duration, self.iv, self.dtype)
         self.dot.on()
         r = super().on()
         self.dot.tick_dmg *= r
@@ -343,9 +346,7 @@ class Afflic_bog(Afflic_scc):
             # from core.advbase import Debuff
             # Debuff('{}_bog'.format(name),-0.5*p,self.duration,1,'att','bog').on()
             from core.advbase import Selfbuff
-            buff = Selfbuff('{}_bog'.format(name),0.5*p,self.duration,'att','bog')
-            buff.bufftime = buff._no_bufftime
-            buff.on()
+            Selfbuff('{}_bog'.format(name),0.5*p,self.duration,'att','bog').no_bufftime().on()
         return p
 
 class Afflics(object):

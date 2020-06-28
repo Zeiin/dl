@@ -9,12 +9,12 @@ class Summer_Estelle(Adv):
     a3 = ('bt',0.2)
     conf = {}
     conf['slots.a'] = Candy_Couriers()+Primal_Crisis()
-    conf['slots.frostbite.a'] = conf['slots.a']
     conf['slots.d'] = Gaibhne_and_Creidhne()
     conf['acl'] = """
+        `dragon
+        `s3, not self.s3_buff
         `s1
         `s2
-        `s3, seq=5 and cancel
         """
     coab = ['Blade', 'Renee', 'Xander']
 

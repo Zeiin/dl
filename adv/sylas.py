@@ -25,10 +25,19 @@ class Sylas(Adv):
         if self.duration <= 60:
             self.coab = ['Blade','Dragonyule_Xainfried','Lin_You']
 
+    def prerun(self):
+        self.s1_attdown = Debuff('s1', 0.30, 10, 0.5, 'attack')
+
+    @staticmethod
+    def prerun_skillshare(self, dst):
+        self.s1_attdown = Debuff(dst, 0.30, 10, 0.5, 'attack')
+
     def s1_proc(self, e):
         with KillerModifier('s1_killer', 'hit', 0.5, ['poison']):
-            self.dmg_make(e.name, 11.04)
+            self.dmg_make(e.name, 5.52)
+            self.s1_attdown.on()
             self.afflics.poison(e.name,120,0.582)
+            self.dmg_make(e.name, 5.52)
 
     def s2_proc(self, e):
         Selfbuff(f'{e.name}_sp',0.30,15,'sp','buff').on()

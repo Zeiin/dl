@@ -1346,23 +1346,23 @@
     },
     "Halloween_Elisanne": {
         "c": {
-            "att": 483,
+            "att": 578,
             "ele": "light",
-            "lv2_autos": 0,
+            "lv2_autos": 1,
             "stars": "5",
             "wt": "lance"
         },
         "s1": {
-            "dmg": 8.05,
+            "dmg": 0.0,
             "hit": 7,
-            "recovery": 2.8,
-            "sp": 2450,
+            "recovery": 2.73,
+            "sp": 4548,
             "startup": 0.1
         },
         "s2": {
-            "dmg": 8.3,
-            "hit": 10,
-            "recovery": 3.55,
+            "dmg": 8.5,
+            "hit": 1,
+            "recovery": 1.466667,
             "sp": 5252,
             "startup": 0.1
         }
@@ -2067,6 +2067,29 @@
             "startup": 0.25
         }
     },
+    "Linnea": {
+        "c": {
+            "att": 521,
+            "ele": "shadow",
+            "lv2_autos": 0,
+            "stars": "5",
+            "wt": "blade"
+        },
+        "s1": {
+            "dmg": 0.0,
+            "hit": 0,
+            "recovery": 1.133,
+            "sp": 3000,
+            "startup": 0.1
+        },
+        "s2": {
+            "dmg": 0.0,
+            "hit": 0,
+            "recovery": 0.9,
+            "sp": 5259,
+            "startup": 0.25
+        }
+    },
     "Linus": {
         "c": {
             "att": 442,
@@ -2092,14 +2115,14 @@
     },
     "Louise": {
         "c": {
-            "att": 470,
+            "att": 563,
             "ele": "wind",
-            "lv2_autos": 0,
+            "lv2_autos": 1,
             "stars": "5",
             "wt": "bow"
         },
         "s1": {
-            "dmg": 8.48,
+            "dmg": 0.0,
             "hit": 4,
             "recovery": 1.95,
             "sp": 2896,
@@ -2344,16 +2367,16 @@
     },
     "Melody": {
         "c": {
-            "att": 470,
+            "att": 563,
             "ele": "wind",
-            "lv2_autos": 0,
+            "lv2_autos": 1,
             "stars": "3",
             "wt": "blade"
         },
         "s1": {
             "buff": [
                 "team",
-                0.15,
+                0.20,
                 15.0
             ],
             "dmg": 0.0,
@@ -2363,7 +2386,7 @@
             "startup": 0.25
         },
         "s2": {
-            "dmg": 7.92,
+            "dmg": 8.10,
             "hit": 3,
             "recovery": 2.75,
             "sp": 4784,
@@ -2487,6 +2510,34 @@
             "hit": 0,
             "recovery": 0.9,
             "sp": 4430,
+            "startup": 0.25
+        }
+    },
+    "Nadine": {
+        "c": {
+            "att": 510,
+            "ele": "flame",
+            "lv2_autos": 0,
+            "stars": "5",
+            "wt": "lance"
+        },
+        "s1": {
+            "dmg": 0.00,
+            "hit": 1,
+            "recovery": 1.30,
+            "sp": 3036,
+            "startup": 0.1
+        },
+        "s2": {
+            "buff": [
+                "self",
+                0.30,
+                15.0
+            ],
+            "dmg": 0.0,
+            "hit": 0,
+            "recovery": 0.9,
+            "sp": 5054,
             "startup": 0.25
         }
     },
@@ -4024,7 +4075,7 @@
             "wt": "lance"
         },
         "s1": {
-            "dmg": 7.53,
+            "dmg": 0,
             "hit": 3,
             "recovery": 1.8,
             "sp": 2707,
@@ -4204,6 +4255,29 @@
             "recovery": 0.9,
             "sp": 5225,
             "startup": 0.1
+        }
+    },
+    "Zena": {
+        "c": {
+            "att": 514,
+            "ele": "shadow",
+            "lv2_autos": 0,
+            "stars": "5",
+            "wt": "wand"
+        },
+        "s1": {
+            "dmg": 7.79,
+            "hit": 4,
+            "recovery": 1.1667,
+            "sp": 2759,
+            "startup": 0.1
+        },
+        "s2": {
+            "dmg": 4.00,
+            "hit": 1,
+            "recovery": 0.8667,
+            "sp": 5570,
+            "startup": 0.10
         }
     },
     "Zhu_Bajie": {

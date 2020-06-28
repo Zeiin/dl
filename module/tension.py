@@ -11,7 +11,7 @@ class Tension:
         self.damage_sources = mod._static.damage_sources # need to account for healing skills bleh
         self.modifier.off()
         self.event = event or Event(name)
-        self.scope = {'s1', 's2', 's3', 's'}
+        self.scope = {'s1', 's2', 's3', 's4', 's'}
         self.current_scope = None
         self.stack = 0
         self.has_stack = Buff('has_'+self.name, 1, -1, self.name, self.name)
@@ -33,7 +33,22 @@ class Tension:
         self.event.stack = self.stack
         self.event.on()
 
-    def check(self, scope):
+    def add_extra(self, n, team=False):
+        if team:
+            log('{}_extra'.format(self.name), 'team', n)
+        if self.stack == self.MAX_STACK:
+            return
+        self.stack += n
+        if self.stack >= self.MAX_STACK:
+            self.stack = self.MAX_STACK
+        log('{}_extra'.format(self.name), '+{}'.format(n), 'stack <{}>'.format(self.stack))
+
+    def check(self, name):
+        scope = name.split('_')
+        if scope[0] == 'o':
+            scope = scope[1]
+        else:
+            scope = scope[0]
         if self.stack >= self.MAX_STACK:
             if self.current_scope is None and scope in self.scope and scope in self.damage_sources:
                 # entering a new s1/s2/s3 block

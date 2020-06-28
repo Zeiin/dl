@@ -74,13 +74,14 @@ class Tiki(Adv):
     conf = tiki_conf.copy()
     conf['slots.a'] = Twinfold_Bonds()+The_Prince_of_Dragonyule()
     conf['slots.frostbite.a'] = conf['slots.a']
-    conf['slots.d'] = Dragonyule_Jeanne()
+    conf['slots.d'] = Nimis()
     conf['acl'] = """
         if self.divine_dragon.get()
         `s1
         `s2
         `dodge, x=3
         else
+        `s3, not self.s3_buff and x=5
         `dragon, self.dragonform.dragon_gauge>=1800
         `s2
         `s1
@@ -112,6 +113,10 @@ class Tiki(Adv):
 
         # trigger updates on dgauge
         self.dragonform.charge_gauge(0, utp=True, dhaste=True)
+
+    def init(self):
+        self.shared_crit = False
+        self.buff_icon_count = lambda: False
 
     def prerun(self):
         self.divine_dragon = Selfbuff('divine_dragon', 1, -1, 'divine', 'dragon')
@@ -154,6 +159,9 @@ class Tiki(Adv):
         self.dragondrive_x.off()
 
     def s1_proc(self, e):
+        if self.shared_crit:
+            crit_mod = Modifier('gala_luca_share', 'crit', 'chance', 0.1 * self.buff_icon_count())
+            crit_mod.on()
         if self.divine_dragon.get():
             self.dmg_make(e.name, 7.90)
             self.afflics.frostbite(e.name,120,0.41)
@@ -161,6 +169,8 @@ class Tiki(Adv):
         else:
             self.dmg_make(e.name, 3.76)
             self.dragonform.charge_gauge(260, utp=True, dhaste=True)
+        if self.shared_crit:
+            crit_mod.off()
 
     def s2_proc(self, e):
         if self.divine_dragon.get():

@@ -3,6 +3,7 @@ import sys
 import random
 from functools import reduce
 from itertools import product
+from collections import OrderedDict
 
 from ability import Ability
 from core import *
@@ -204,6 +205,10 @@ class Buff(object):
     def _debufftime(self):
         return self._static.debufftime()
 
+    def no_bufftime(self):
+        self.bufftime = self._no_bufftime
+        return self
+
     def value(self, newvalue=None):
         if newvalue:
             return self.set(newvalue)
@@ -241,7 +246,7 @@ class Buff(object):
         return value, stack
 
     def buff_end_proc(self, e):
-        log('buff', self.name, '%s: %.2f' % (self.mod_type, self.value()), self.name + ' buff end <timeout>')
+        log('buff', self.name, f'{self.mod_type}({self.mod_order}): {self.value()}', f'{self.name} buff end <timeout>')
         self.__active = 0
 
         if self.__stored:
@@ -256,7 +261,7 @@ class Buff(object):
             self.__stored = 0
         value, stack = self.valuestack()
         if stack > 0:
-            log('buff', self.name, '%s: %.2f' % (self.mod_type, value), self.name + ' buff stack <%d>' % stack)
+            log('buff', self.name, f'{self.mod_type}({self.mod_order}): {value}', f'{self.name} buff stack <{stack}>')
         self.modifier.off()
 
     def count_team_buff(self):
@@ -310,16 +315,16 @@ class Buff(object):
                 self.__stored = 1
             if d >= 0:
                 self.buff_end_timer.on(d)
-            log('buff', self.name, '%s: %.2f' % (self.mod_type, self.value()), self.name + ' buff start <%ds>' % d)
+            log('buff', self.name, f'{self.mod_type}({self.mod_order}): {self.value()}', f'{self.name} buff start <{d}s>')
         else:
             if d >= 0:
                 self.buff_end_timer.on(d)
-                log('buff', self.name, '%s: %.2f' % (self.mod_type, self.value()),
-                    self.name + ' buff refresh <%ds>' % d)
+                log('buff', self.name, f'{self.mod_type}({self.mod_order}): {self.value()}', f'{self.name} buff refresh <{d}s>')
 
         value, stack = self.valuestack()
         if stack > 1:
-            log('buff', self.name, '%s: %.2f' % (self.mod_type, value), self.name + ' buff stack <%d>' % stack)
+            log('buff', self.name, f'{self.mod_type}({self.mod_order}): {value}', f'{self.name} buff stack <{stack}>')
+
 
         if self.mod_type == 'defense':
             Event('defchain').on()
@@ -330,7 +335,7 @@ class Buff(object):
     def off(self):
         if self.__active == 0:
             return
-        log('buff', self.name, '%s: %.2f' % (self.mod_type, self.value()), self.name + ' buff end <turn off>')
+        log('buff', self.name, f'{self.mod_type}({self.mod_order}): {self.value()}', f'{self.name} buff end <turn off>')
         self.__active = 0
         self.modifier.off()
         self.buff_end_timer.off()
@@ -341,14 +346,6 @@ class Selfbuff(Buff):
     def __init__(self, name='<buff_noname>', value=0, duration=0, mtype=None, morder=None):
         Buff.__init__(self, name, value, duration, mtype, morder)
         self.bufftype = 'self'
-
-    def buffcount(self):
-        bc = 0
-        for i in self._static.all_buffs:
-            if i.get() and i.bufftype == 'self' or i.bufftype == 'team':
-                bc += 1
-        return bc
-
 
 class SingleActionBuff(Buff):
     # self buff lasts until the action it is buffing is completed
@@ -402,7 +399,7 @@ class Teambuff(Buff):
 
 class Spdbuff(Buff):
     def __init__(self, name='<buff_noname>', value=0, duration=0, mtype=None, morder=None, wide='self'):
-        mtype = 'spd'
+        mtype = mtype or 'spd'
         morder = 'passive'
         Buff.__init__(self, name, value, duration, mtype, morder)
         self.bufftype = wide
@@ -562,6 +559,7 @@ class Action(object):
         'prev': 0,
         'doing': 0,
         'spd_func': 0,
+        'c_spd_func': 0,
     })
 
     name = '_Action'
@@ -601,11 +599,13 @@ class Action(object):
         if act != None:
             self.act = act
 
-        if self._static.spd_func == 0:
+        if not self._static.spd_func:
             self._static.spd_func = self.nospeed
-        if self._static.doing == 0:
+        if not self._static.c_spd_func:
+            self._static.c_spd_func = self.nospeed
+        if not self._static.doing:
             self._static.doing = self.nop
-        if self._static.prev == 0:
+        if not self._static.prev:
             self._static.prev = self.nop
 
         self.cancel_by = []
@@ -759,6 +759,9 @@ class Fs(Action):
         self.interrupt_by = ['s']
         self.cancel_by = ['s', 'dodge']
 
+    def charge_speed(self):
+        return self._static.c_spd_func()
+
     def sync_config(self, c):
         self._charge = c.charge
         self._startup = c.startup
@@ -766,7 +769,7 @@ class Fs(Action):
         self._active = c.active
 
     def getstartup(self):
-        return self._charge + (self._startup / self.speed())
+        return (self._charge / self.charge_speed()) + (self._startup / self.speed())
 
     def realtime(self):
         self.act_event = Event('fs')
@@ -854,6 +857,9 @@ class Adv(object):
     def s4_proc(self, e):
         pass
 
+    def s_proc(self, e):
+        pass
+
     def x_proc(self, e):
         pass
 
@@ -873,6 +879,9 @@ class Adv(object):
         pass
 
     def s4_before(self, e):
+        pass
+
+    def s_before(self, e):
         pass
 
     def x_before(self, e):
@@ -1081,6 +1090,7 @@ class Adv(object):
 
     def set_hp(self, hp):
         old_hp = self.hp
+        hp = round(hp*10)/10
         self.hp = max(min(hp, 100), 0)
         if self.hp != old_hp:
             if self.hp == 0:
@@ -1090,6 +1100,8 @@ class Adv(object):
             self.condition.hp_cond_set(self.hp)
             self.hp_event.hp = self.hp
             self.hp_event()
+            if 'hp' in self.conf and self.hp != self.conf['hp']:
+                self.set_hp(self.conf['hp'])
 
     def afflic_condition(self):
         if 'afflict_res' in self.conf:
@@ -1102,9 +1114,15 @@ class Adv(object):
                         vars(self.afflics)[afflic].resist = 100
 
     def sim_affliction(self):
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
-            aff = vars(self.afflics)[self.conf.sim_afflict.type]
-            aff.get_override = min(self.conf.sim_afflict.efficiency, 1)
+        if 'sim_afflict' in self.conf:
+            for aff_type in AFFLICT_LIST:
+                aff = vars(self.afflics)[aff_type]
+                try:
+                    if self.conf.sim_afflict[aff_type] > 0:
+                        aff.get_override = min(self.conf.sim_afflict[aff_type], 1.0)
+                        self.sim_afflict.add(aff_type)
+                except:
+                    continue
 
     def sim_buffbot(self):
         if 'sim_buffbot' in self.conf:
@@ -1112,6 +1130,8 @@ class Adv(object):
                 value = -self.conf.sim_buffbot.debuff
                 if self.condition('boss def {:+.0%}'.format(value)):
                     buff = self.Selfbuff('simulated_def', value, -1, mtype='def')
+                    buff.chance = 1
+                    buff.val = value
                     buff.on()
             if 'buff' in self.conf.sim_buffbot:
                 if self.condition('team str {:+.0%}'.format(self.conf.sim_buffbot.buff)):
@@ -1136,14 +1156,14 @@ class Adv(object):
             return
 
         from conf.slot_common import ele_punisher
-        if 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency > 0:
+        if self.sim_afflict:
             aff, wpa = ele_punisher[self.slots.c.ele]
             wp1 = self.slots.a.__class__
             wp2 = wpa
             if wp1 != wp2:
                 self.slots.a = wp1()+wp2()
             if aff in self.conf.slots:
-                afflic_slots = self.conf.slots[self.conf.sim_afflict.type]
+                afflic_slots = self.conf.slots[aff]
                 for s in ('d', 'w', 'a'):
                     if s in afflic_slots:
                         self.slots.__dict__[s] = afflic_slots[s]
@@ -1172,6 +1192,7 @@ class Adv(object):
     def __init__(self, conf={}, cond=None):
         if not self.name:
             self.name = self.__class__.__name__
+
         self.Event = Event
         self.Buff = Buff
         self.Debuff = Debuff
@@ -1197,6 +1218,12 @@ class Adv(object):
             self.conf = Conf()
         self.pre_conf()
 
+        # set afflic
+        self.afflics = Afflics()
+        self.sim_afflict = set()
+        self.afflic_condition()
+        self.sim_affliction()
+
         # self.slots = slot.Slots()
         self.default_slot()
 
@@ -1213,9 +1240,6 @@ class Adv(object):
 
         self.skill = Skill()
         self._acl = None
-
-        # set afflic
-        self.afflics = Afflics()
 
         # self.classconf = self.conf
         self.init()
@@ -1234,9 +1258,6 @@ class Adv(object):
             scope = scope[1]
         else:
             scope = scope[0]
-
-        for t in self.tension:
-            t.check(scope)
 
         if scope[0] == 's':
             try:
@@ -1259,11 +1280,14 @@ class Adv(object):
         return 1 + sum([modifier.get() for modifier in self.all_modifiers[mtype][morder]])
 
     def l_have_speed(self, e):
-        self.speed = self.have_speed
         self.action._static.spd_func = self.speed
+        self.action._static.c_spd_func = self.c_speed
 
-    def have_speed(self):
+    def speed(self):
         return min(self.mod('spd'), 1.50)
+
+    def c_speed(self):
+        return min(self.mod('cspd'), 1.50)
 
     def crit_mod(self):
         pass
@@ -1314,18 +1338,22 @@ class Adv(object):
             if rate > 0:
                 rates[afflic] = rate
 
+        debuff_rates = {}
         for buff in self.all_buffs:
-            debuff_rates = {}
-            if buff.get() and buff.bufftype == 'debuff' and buff.val < 0:
+            if buff.get() and (buff.bufftype == 'debuff' or buff.name == 'simulated_def') and buff.val < 0:
                 dkey = f'debuff_{buff.mod_type}'
                 try:
                     debuff_rates[dkey] *= (1 - buff.chance)
                 except:
                     debuff_rates[dkey] = 1 - buff.chance
-            for dkey in debuff_rates.keys():
-                debuff_rates[dkey] = 1 - debuff_rates[dkey]
-            rates.update(debuff_rates)
-
+                try:
+                    debuff_rates['debuff'] *= (1 - buff.chance)
+                except:
+                    debuff_rates['debuff'] = 1 - buff.chance
+        for dkey in debuff_rates.keys():
+            debuff_rates[dkey] = 1 - debuff_rates[dkey]
+        rates.update(debuff_rates)
+        
         rate_list = list(rates.items())
         for mask in product(*[[0, 1]] * len(rate_list)):
             p = 1.0
@@ -1374,8 +1402,12 @@ class Adv(object):
         return False
 
     @property
-    def is_sim_afflict(self):
-        return 'sim_afflict' in self.conf and self.conf.sim_afflict.efficiency == 1
+    def buffcount(self):
+        bc = 0
+        for i in self.all_buffs:
+            if i.get() and i.bufftype == 'self' or i.bufftype == 'team':
+                bc += 1
+        return bc
 
     def l_idle(self, e):
         """
@@ -1513,10 +1545,11 @@ class Adv(object):
             self.skillshare_list.remove(self.__class__.__name__)
         except:
             pass
-        if len(self.skillshare_list) < 2:
-            self.skillshare_list.insert(0, 'Weapon')
+        self.skillshare_list = list(OrderedDict.fromkeys(self.skillshare_list))
         if len(self.skillshare_list) > 2:
             self.skillshare_list = self.skillshare_list[:2]
+        if len(self.skillshare_list) < 2:
+            self.skillshare_list.insert(0, 'Weapon')
         from conf import advconfs, skillshare
         from core.simulate import load_adv_module
         share_limit = 10
@@ -1557,11 +1590,12 @@ class Adv(object):
                     owner_conf = Conf(advconfs[owner])
                     owner_conf[src_key].sp = shared_sp
                     self.conf[dst_key] = Conf(owner_conf[src_key])
-                    s = Skill(dst_key, owner_conf[src_key])
+                    s = Skill(dst_key, self.conf[dst_key])
                     s.owner = owner
                     self.__setattr__(dst_key, s)
                     owner_module = load_adv_module(owner)
                     preruns[dst_key] = owner_module.prerun_skillshare
+                    self.rebind_function(owner_module, f'{src_key}_before', f'{dst_key}_before')
                     self.rebind_function(owner_module, f'{src_key}_proc', f'{dst_key}_proc')
                 except:
                     # placeholder for healer skill share
@@ -1623,8 +1657,6 @@ class Adv(object):
             self.d_slots()
         self.base_att = 0
 
-        self.afflic_condition()
-        self.sim_affliction()
         self.sim_buffbot()
 
         self.slot_backdoor()
@@ -1634,6 +1666,15 @@ class Adv(object):
         for dst_key, prerun in preruns_ss.items():
             prerun(self, dst_key)
         self.prerun()
+
+        if 'hp' in self.conf:
+            self.set_hp(self.conf['hp'])
+
+        if 'dragonbattle' in self.conf and self.conf['dragonbattle']:
+            self.conf['acl'] = """
+                `dragon
+            """
+            self.dragonform.set_dragonbattle(self.duration)
 
         self.d_acl()
         self.acl_backdoor()
@@ -1786,6 +1827,8 @@ class Adv(object):
 
     def dmg_make(self, name, dmg_coef, dtype=None, fixed=False):
         self.damage_sources.add(name)
+        for t in self.tension:
+            t.check(name)
         if dtype == None:
             dtype = name
         count = self.dmg_formula(dtype, dmg_coef) if not fixed else dmg_coef
@@ -1830,6 +1873,7 @@ class Adv(object):
         dmg_coef = self.conf[e.name + '.dmg']
         func = e.name + '_before'
         tmp = getattr(self, func)(e)
+        self.s_before(e)
         if tmp != None:
             dmg_coef = tmp
         if dmg_coef:
@@ -1860,6 +1904,7 @@ class Adv(object):
 
         func = e.name + '_proc'
         getattr(self, func)(e)
+        self.s_proc(e)
 
     @staticmethod
     def do_buff(e, buffarg):

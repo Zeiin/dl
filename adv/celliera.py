@@ -7,16 +7,16 @@ def module():
     return Celliera
 
 class Celliera(Adv):
-    a3 = ('lo',0.50)
+    a3 = ('lo',0.60)
 
     conf = {}
     conf['slots.d'] = Siren()
     conf['slots.a'] = Primal_Crisis()+His_Clever_Brother()
     conf['slots.frostbite.a'] = conf['slots.a']
     conf['acl'] = """
+        `s3, not self.s3_buff
         `s2, not self.s2_buff.get()
         `s1
-        `s3, cancel
     """
     coab = ['Dagger', 'Xander', 'Wand']
 
@@ -45,7 +45,7 @@ class Celliera(Adv):
             self.s2_buff.off()
         else:
             self.dragonform.disabled = True
-            self.frostbite.off()
+            self.frostbite.on()
             self.s2_buff.on()
 
 if __name__ == '__main__':

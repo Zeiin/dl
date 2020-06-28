@@ -223,7 +223,7 @@ appetizer_conf = {
 class Valerio(Adv):
     conf = {}
     conf['slots.a'] = The_Wyrmclan_Duo()+Primal_Crisis()
-    conf['slots.frostbite.a'] = Primal_Crisis()+His_Clever_Brother()
+    conf['slots.frostbite.a'] = conf['slots.a']
     conf['slots.d'] = Siren()
     conf['acl'] = """
         # stances
@@ -235,9 +235,9 @@ class Valerio(Adv):
         `dessert
         end
         # actions
+        `s3, not self.s3_buff 
         `s2
         `s1
-        `s3
     """
     coab = ['Summer_Estelle', 'Renee', 'Xander']
     conf['afflict_res.frostbite'] = 0
@@ -254,6 +254,7 @@ class Valerio(Adv):
         self.crit_mod = self.custom_crit_mod
         self.a1_cd = False
         self.s1_debuff = Debuff('s1', 0.05, 30)
+        self.s1_atkdown = Debuff('s1', 0.15, 20, 1, 'attack')
         self.s1_mod = {
             'appetizer': 1.29,
             'entree': 1.77,
@@ -291,9 +292,8 @@ class Valerio(Adv):
     def update_stance(self):
         if self.hits >= 20 and self.next_stance is not None and not self.skill._static.silence:
             curr_stance = self.stance_dict[self.stance]
-            curr_stance.off()
             next_stance = self.stance_dict[self.next_stance]
-            next_stance.on()
+            next_stance.switch(curr_stance)
             self.stance = self.next_stance
             self.next_stance = None
 
@@ -327,6 +327,8 @@ class Valerio(Adv):
         if self.stance == 'appetizer':
             self.afflics.frostbite(e.name,120,0.41)
             self.s1_debuff.on()
+        if self.stance == 'entree':
+            self.s1_atkdown.on()
         for _ in range(5):
             self.dmg_make(e.name, self.s1_mod[self.stance])
             self.hits += 1

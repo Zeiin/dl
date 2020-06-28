@@ -13,11 +13,12 @@ class Xainfried(Adv):
     conf['slots.d'] = Gaibhne_and_Creidhne()
     conf['acl'] = """
         `dragon.act('c3 s end')
+        `s3, not self.s3_buff
         `s1
         `s2
         `fs, x=5
         """
-    coab = ['Xander', 'Pipple', 'Bow']
+    coab = ['Xander', 'Yurius', 'Bow']
     conf['afflict_res.frostbite'] = 0
 
     def s1_proc(self, e):
@@ -29,7 +30,7 @@ class Xainfried(Adv):
             self.hits += 3
 
     def s2_proc(self, e):
-        self.dragonform.charge_gauge(10)
+        self.dragonform.charge_gauge(100)
 
 if __name__ == '__main__':
     from core.simulate import test_with_argv

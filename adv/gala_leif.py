@@ -66,7 +66,8 @@ class Gala_Leif(Adv):
         `fs, x=3
     """
     coab = ['Dragonyule_Xainfried', 'Blade', 'Lin_You']
-    
+    conf['afflict_res.poison'] = 0
+
     def prerun(self):
         self.stance = 'shielding'
         self.next_stance = 'shielding'
@@ -118,10 +119,9 @@ class Gala_Leif(Adv):
     def update_stance(self):
         if self.hits >= 5 and self.next_stance is not None and not self.skill._static.silence:
             curr_stance = self.stance_dict[self.stance]
-            curr_stance.off()
             next_stance = self.stance_dict[self.next_stance]
+            next_stance.switch(curr_stance)
             self.s1.ac, self.s2.ac = self.stance_ac_dict[self.next_stance]
-            next_stance.on()
             self.stance = self.next_stance
             self.next_stance = None
 
