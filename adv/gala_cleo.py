@@ -16,7 +16,7 @@ class Gala_Cleo(Adv):
     a3 = ('prep','100%')
     conf = {}
     conf['slots.a'] = CC()+PC()  # wand c2*1.08 = 217
-    conf['slots.d'] = Cait_Sith()
+    #conf['slots.d'] = Cait_Sith()
     conf['acl'] = """
         `s3, not self.s3_buff
         `fs, s1.charged>=s1.sp and self.fs_alt.uses > 0

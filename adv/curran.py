@@ -14,14 +14,16 @@ class Curran(Adv):
     conf = {}
     conf['slots.poison.a'] = Kung_Fu_Masters()+The_Plaguebringer()
     conf['slots.d'] = Fatalis()
-    conf['slots.poison.d'] = Shinobi()
+    conf['slots.poison.d'] = Cait_Sith()
     conf['acl'] = '''
         `dragon.act('c3 s end')
         `s3, not self.s3_buff
         `s1
         `s2
+        `s4
         '''
     coab = ['Curran','Blade','Wand','Bow']
+    share = ['Althemia']
 
     def s1_before(self, e):
         with KillerModifier('s1_killer', 'hit', 0.6, ['poison']):
