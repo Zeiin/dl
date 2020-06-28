@@ -282,7 +282,58 @@ class Azazel(DragonBase):
         from core.advbase import Teambuff
         dmg = self.adv.dmg_make('ds',5.00,'s')
         Teambuff('ds', 0.15, 40, 'poison_killer', 'passive').on()
-        return dmg
+        return
+
+class Cait_Sith(DragonBase):
+    ele = 'shadow'
+    att = 128
+    a = [('st', 15)]
+
+    dragonform = {
+        'act': 'c3 s',
+
+        'dx1.dmg': 1.90,
+        'dx1.startup': 12 / 60.0,  # c1 frames
+        'dx1.hit': 1,
+
+        'dx2.dmg': 2.09,
+        'dx2.startup': 36 / 60.0,  # c2 frames
+        'dx2.hit': 1,
+
+        'dx3.dmg': 3.24,
+        'dx3.startup': 39 / 60.0,  # c3 frames
+        'dx3.recovery': 56 / 60.0,  # recovery
+        'dx3.hit': 3,
+
+        'ds.recovery': 130 / 60,  # skill frames, need confirm
+        'ds.hit': 1,
+    }
+
+class kitty(DragonBase):
+    ele = 'shadow'
+    att = 128
+    #a = [('st', 15)]
+    a = [('s', 1.8)]
+
+    dragonform = {
+        'act': 'c3 s',
+
+        'dx1.dmg': 1.90,
+        'dx1.startup': 12 / 60.0,  # c1 frames
+        'dx1.hit': 1,
+
+        'dx2.dmg': 2.09,
+        'dx2.startup': 36 / 60.0,  # c2 frames
+        'dx2.hit': 1,
+
+        'dx3.dmg': 3.24,
+        'dx3.startup': 39 / 60.0,  # c3 frames
+        'dx3.recovery': 56 / 60.0,  # recovery
+        'dx3.hit': 3,
+
+        'ds.recovery': 130 / 60,  # skill frames, need confirm
+        'ds.hit': 1,
+    }
 
 class Unreleased_ShadowPrimedStr(DragonBase):
     ele = 'shadow'

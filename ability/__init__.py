@@ -699,3 +699,70 @@ class Energy_Extra(Ability):
         adv.Event('energy').listener(l_energy)
 
 ability_dict['eextra'] = Energy_Extra
+
+
+class skillful_trickster(Ability):
+    Skillful_Charges = 0
+    observedHits = 0
+    advent = None
+
+    def trickster_check(self, prev_charge):
+        from core.log import log
+        sd = 0
+        if (self.Skillful_Charges > 0) & (prev_charge == 0): #If we went from having no charges (aka no skill damage) to having damage (aka skill damage)
+            sd = 1.80
+        elif (self.Skillful_Charges == 0) & (prev_charge > 0): #If we went from having charges to having no charges.
+            sd = -1.8
+        if sd !=0:
+            self.advent.Modifier('d1', 's', 'passive', sd) #We only add or subtract 1.8 when we see a shift in states, rather than per update.
+            log('debug', 'skillful_trickster_sd', f'+{sd}', sd)
+
+
+    def add_charges(self, reason):
+        addCount = 0
+        prev_charge = self.Skillful_Charges
+        from core.log import log
+        if reason=='combo':
+            addCount += 1
+        elif reason == 'dshift':
+            addCount += 8
+        elif reason == 'init':
+            addCount += 15
+
+        self.Skillful_Charges += addCount
+        if self.Skillful_Charges > 15:
+            self.Skillful_Charges = 15
+        log('debug', 'Skillful_Trickster', f'+{addCount}', self.Skillful_Charges)
+        self.trickster_check(prev_charge)
+
+    def remove_charges(self):
+        from core.log import log
+        prev_charge = self.Skillful_Charges
+        if self.Skillful_Charges > 0:
+            self.Skillful_Charges -= 1
+            log('debug', 'Skillful_Trickster', f'+{-1}', self.Skillful_Charges)
+            self.trickster_check(prev_charge)
+
+    def __init__(self, name, value, cond=None):
+        super().__init__(name, value)
+
+    def oninit(self, adv, afrom=None):
+        self.advent = adv
+        self.add_charges('init')
+        outer = self
+        def rc(self):
+            outer.remove_charges()
+            if adv.hits - outer.observedHits > 25:
+                outer.add_charges('combo')
+                outer.observedHits += 25
+        def ac(self):
+            outer.add_charges('dshift')
+        def xc(self):
+            if adv.hits - outer.observedHits > 25:
+                outer.add_charges('combo')
+                outer.observedHits += 25
+        adv.Event('s').listener(rc)
+        adv.Event('dragon_end').listener(ac)
+        adv.Event('x').listener(xc)
+
+ability_dict['st'] = skillful_trickster

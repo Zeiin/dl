@@ -11,6 +11,7 @@ class Veronica(Adv):
     conf = {}
     conf['slots.a'] = Candy_Couriers()+Primal_Crisis()
     conf['slots.poison.a'] = Candy_Couriers()+The_Plaguebringer()
+    conf['slots.d'] = Cait_Sith()
     conf['acl'] = """
         `dragon.act("c3 s end")
         `s3, not self.s3_buff

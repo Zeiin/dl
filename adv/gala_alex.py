@@ -1,6 +1,6 @@
 from core.advbase import *
 from slot.a import *
-
+from slot.d import *
 galex_conf = {
     'x1.dmg': 82 / 100.0,
     'x1.startup': 8 / 60.0,
