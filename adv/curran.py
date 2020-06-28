@@ -20,7 +20,6 @@ class Curran(Adv):
         `s3, not self.s3_buff
         `s1
         `s2
-        `s4
         '''
     coab = ['Curran','Blade','Wand','Bow']
     share = ['Althemia']

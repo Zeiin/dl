@@ -701,7 +701,7 @@ class Energy_Extra(Ability):
 ability_dict['eextra'] = Energy_Extra
 
 
-class skillful_trickster(Ability):
+class Skillful_Trickster(Ability):
     Skillful_Charges = 0
     observedHits = 0
     advent = None
@@ -716,7 +716,6 @@ class skillful_trickster(Ability):
         if sd !=0:
             self.advent.Modifier('d1', 's', 'passive', sd) #We only add or subtract 1.8 when we see a shift in states, rather than per update.
             log('debug', 'skillful_trickster_sd', f'+{sd}', sd)
-
 
     def add_charges(self, reason):
         addCount = 0
@@ -765,4 +764,4 @@ class skillful_trickster(Ability):
         adv.Event('dragon_end').listener(ac)
         adv.Event('x').listener(xc)
 
-ability_dict['st'] = skillful_trickster
+ability_dict['st'] = Skillful_Trickster
